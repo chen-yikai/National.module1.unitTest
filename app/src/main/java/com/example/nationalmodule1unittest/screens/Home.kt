@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SegmentedButton
@@ -43,12 +44,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHostController) {
     val cards by card.getAllCards().collectAsState(emptyList())
+    val cardsLearning by card.getLearningCards().collectAsState(emptyList())
     val scope = rememberCoroutineScope()
+    val choiceButtons = listOf("所有", "學習中")
+    var selected by remember { mutableStateOf(choiceButtons[0]) }
 
     LazyColumn(contentPadding = innerPadding, modifier = Modifier.padding(horizontal = 10.dp)) {
         stickyHeader {
-            val choiceButtons = listOf("所有", "學習中")
-            var selected by remember { mutableStateOf(choiceButtons[0]) }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -58,12 +60,12 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                 Text("單字列表", fontSize = 30.sp, fontWeight = FontWeight.Bold)
                 IconButton(onClick = { navController.navigate(Screens.NewCard.name) }) {
                     Icon(
-                        painter = painterResource(R.drawable.edit),
+                        painter = painterResource(R.drawable.add),
                         contentDescription = "add"
                     )
                 }
             }
-            Spacer(modifier = Modifier.padding(5.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 choiceButtons.forEachIndexed { index, item ->
                     SegmentedButton(
@@ -75,38 +77,44 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                     )
                 }
             }
+            Spacer(Modifier.height(10.dp))
         }
-        items(cards) {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 5.dp, vertical = 15.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        painter = painterResource(R.drawable.speak),
-                        contentDescription = "speak"
-                    )
-                }
-                Spacer(Modifier.width(10.dp))
-                Column {
-                    Text(it.en, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                    Text(it.tw, color = Color.Gray)
-                }
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = {
-                    scope.launch {
-                        card.updateLearning(it.id, !it.learning)
+        items(if (selected == "所有") cards else cardsLearning) {
+            Card(
+                modifier = Modifier.padding(vertical = 5.dp),
+                onClick = { navController.navigate("${Screens.EditCard.name}/${it.id}") }) {
+
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 5.dp, vertical = 15.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            painter = painterResource(R.drawable.speak),
+                            contentDescription = "speak"
+                        )
                     }
-                }) {
-                    Icon(
-                        painter = painterResource(if (it.learning) R.drawable.is_learning else R.drawable.not_learning),
-                        contentDescription = null
-                    )
+                    Spacer(Modifier.width(10.dp))
+                    Column {
+                        Text(it.en, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                        Text(it.tw, color = Color.Gray)
+                    }
+                    Spacer(Modifier.weight(1f))
+                    IconButton(onClick = {
+                        scope.launch {
+                            card.updateLearning(it.id, !it.learning)
+                        }
+                    }) {
+                        Icon(
+                            painter = painterResource(if (it.learning) R.drawable.is_learning else R.drawable.not_learning),
+                            contentDescription = null,
+                            tint = if (it.learning) Color(0xffFF9F00).copy(alpha = 0.7f) else Color.Gray
+                        )
+                    }
                 }
             }
-            HorizontalDivider()
         }
     }
 }

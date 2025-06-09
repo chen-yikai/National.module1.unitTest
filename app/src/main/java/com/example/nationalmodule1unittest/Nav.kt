@@ -1,6 +1,8 @@
 package com.example.nationalmodule1unittest
 
 import android.content.Context
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -33,30 +35,43 @@ fun Nav(context: Context) {
     val card: CardDao = room.cardDao()
 
     Scaffold(bottomBar = {
-        NavigationBar {
-            navItems.forEach {
-                NavigationBarItem(
-                    onClick = { navController.navigate(it.key) },
-                    label = { Text(it.key) },
-                    icon = {
-                        Icon(
-                            painter = painterResource(it.value),
-                            contentDescription = it.key
-                        )
-                    },
-                    selected = currentScreen?.destination?.route == it.key
-                )
+        if (currentScreen?.destination?.route == Screens.單字卡.name || currentScreen?.destination?.route == Screens.輪轉單字卡.name) {
+            NavigationBar {
+                navItems.forEach {
+                    NavigationBarItem(
+                        onClick = { navController.navigate(it.key) },
+                        label = { Text(it.key) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(it.value),
+                                contentDescription = it.key
+                            )
+                        },
+                        selected = currentScreen?.destination?.route == it.key
+                    )
+                }
             }
         }
     }) { innerPadding ->
-        NavHost(navController, startDestination = Screens.單字卡.name) {
+        NavHost(
+            navController,
+            startDestination = Screens.單字卡.name,
+            enterTransition = { EnterTransition.None }, exitTransition = { ExitTransition.None }) {
             composable(Screens.單字卡.name) { HomeScreen(innerPadding, card, navController) }
-            composable(Screens.輪轉單字卡.name) { CardScreen(innerPadding, navController) }
+            composable(Screens.輪轉單字卡.name) { CardScreen(innerPadding, card, navController) }
             composable(Screens.NewCard.name) { NewCardScreen(innerPadding, card, navController) }
             composable(
                 "${Screens.EditCard.name}/{id}",
-                arguments = listOf(navArgument("id") { NavType.IntType })
-            ) { EditCardScreen(innerPadding, card, it.arguments?.getInt("id") ?: -1) }
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { entry ->
+                val id = entry.arguments?.getInt("id") ?: 0
+                EditCardScreen(
+                    innerPadding,
+                    card,
+                    navController,
+                    id
+                )
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,13 +28,14 @@ import androidx.navigation.NavHostController
 import com.example.nationalmodule1unittest.Card
 import com.example.nationalmodule1unittest.CardDao
 import com.example.nationalmodule1unittest.R
+import com.example.nationalmodule1unittest.Screens
 import kotlinx.coroutines.launch
 
 @Composable
 fun NewCardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHostController) {
     var en by remember { mutableStateOf("") }
     var tw by remember { mutableStateOf("") }
-    var scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -68,6 +70,7 @@ fun NewCardScreen(innerPadding: PaddingValues, card: CardDao, navController: Nav
                 scope.launch {
                     card.addCard(Card(en = en, tw = tw, learning = false))
                 }
+                navController.navigate(Screens.單字卡.name)
             }, modifier = Modifier.fillMaxWidth()) {
                 Text("新增")
             }

@@ -26,6 +26,15 @@ interface CardDao {
     @Query("SELECT * FROM cards")
     fun getAllCards(): Flow<List<Card>>
 
+    @Query("SELECT * FROM cards WHERE learning = true")
+    fun getLearningCards(): Flow<List<Card>>
+
+    @Query("SELECT * FROM cards WHERE id = :id")
+    fun getCard(id: Int): Flow<Card>
+
+    @Query("UPDATE cards SET en = :en, tw = :tw WHERE id = :id")
+    fun updateDetail(id: Int, en: String, tw: String)
+
     @Update
     suspend fun updateCard(card: Card)
 

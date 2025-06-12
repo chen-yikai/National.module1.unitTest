@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun EditCardScreen(
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier
+        modifier = Modifier.testTag("EditCardScreen")
             .padding(innerPadding)
             .padding(horizontal = 5.dp)
     ) {

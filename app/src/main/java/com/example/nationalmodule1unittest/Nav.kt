@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -47,6 +49,7 @@ fun Nav(context: Context) {
                                 contentDescription = it.key
                             )
                         },
+                        modifier = Modifier.testTag(it.key),
                         selected = currentScreen?.destination?.route == it.key
                     )
                 }

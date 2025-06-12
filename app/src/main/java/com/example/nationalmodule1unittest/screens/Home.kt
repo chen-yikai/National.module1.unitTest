@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -65,7 +66,7 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
         }
     }
 
-    LazyColumn(contentPadding = innerPadding, modifier = Modifier.padding(horizontal = 10.dp)) {
+    LazyColumn(contentPadding = innerPadding, modifier = Modifier.testTag("HomeScreen").padding(horizontal = 10.dp)) {
         stickyHeader {
             Row(
                 modifier = Modifier.fillMaxWidth(),

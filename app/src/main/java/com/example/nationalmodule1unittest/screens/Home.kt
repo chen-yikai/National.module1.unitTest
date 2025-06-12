@@ -1,5 +1,6 @@
 package com.example.nationalmodule1unittest.screens
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ import com.example.nationalmodule1unittest.CardDao
 import com.example.nationalmodule1unittest.R
 import com.example.nationalmodule1unittest.Screens
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -48,10 +52,21 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
     val scope = rememberCoroutineScope()
     val choiceButtons = listOf("所有", "學習中")
     var selected by remember { mutableStateOf(choiceButtons[0]) }
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
+    var ttsReady by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        tts = TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.language = Locale.US
+                ttsReady = true
+            }
+        }
+    }
 
     LazyColumn(contentPadding = innerPadding, modifier = Modifier.padding(horizontal = 10.dp)) {
         stickyHeader {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -90,7 +105,9 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        tts?.speak(it.en, TextToSpeech.QUEUE_FLUSH, null, null)
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.speak),
                             contentDescription = "speak"

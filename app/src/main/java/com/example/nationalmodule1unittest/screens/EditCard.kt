@@ -75,7 +75,10 @@ fun EditCardScreen(
             Spacer(Modifier.height(20.dp))
             Button(onClick = {
                 scope.launch {
-                    card.updateDetail(id!!, en, tw)
+                    if (id != null) {
+                        card.updateDetail(id, en, tw)
+                        navController.popBackStack()
+                    }
                 }
             }, modifier = Modifier.fillMaxWidth()) {
                 Text("編輯")

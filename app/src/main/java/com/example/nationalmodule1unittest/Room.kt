@@ -33,7 +33,7 @@ interface CardDao {
     fun getCard(id: Int): Flow<Card>
 
     @Query("UPDATE cards SET en = :en, tw = :tw WHERE id = :id")
-    fun updateDetail(id: Int, en: String, tw: String)
+    suspend fun updateDetail(id: Int, en: String, tw: String)
 
     @Update
     suspend fun updateCard(card: Card)

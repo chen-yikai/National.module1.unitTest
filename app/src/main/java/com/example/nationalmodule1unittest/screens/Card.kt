@@ -1,6 +1,9 @@
 package com.example.nationalmodule1unittest.screens
 
 import android.graphics.Paint.Align
+import android.speech.tts.TextToSpeech
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,17 +37,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.nationalmodule1unittest.CardDao
+import java.util.Locale
 
 @Composable
 fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHostController) {
     val cards by card.getAllCards().collectAsState(emptyList())
     val pagerState = rememberPagerState { cards.size }
     var showChinese by remember { mutableStateOf(true) }
+    val rotateDeg = animateFloatAsState(
+        targetValue = if (showChinese) 180f else 0f,
+        animationSpec = tween(durationMillis = 300), label = "rotate deg"
+    )
 
     Box(
         modifier = Modifier
@@ -52,46 +62,85 @@ fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp), horizontalArrangement = Arrangement.End
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp)
         ) {
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Settings, contentDescription = "")
-            }
+            Text("${pagerState.currentPage + 1}/${cards.size}")
         }
         HorizontalPager(pagerState, modifier = Modifier.align(Alignment.Center)) {
             val current = cards[it]
-            Card(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 40.dp, vertical = 100.dp), onClick = {
-                    showChinese = !showChinese
-                }, elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
+            LaunchedEffect(it) {
+                showChinese = true
+            }
+            if (showChinese) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            rotationY = rotateDeg.value
+                            cameraDistance = 6 * density
+                        }
+                        .graphicsLayer {
+                            rotationY = 180f
+                        }
+                        .padding(horizontal = 40.dp, vertical = 100.dp), onClick = {
+                        showChinese = !showChinese
+                    }, elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
                 ) {
-                    Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                        if (current.learning) {
-                            Spacer(Modifier.height(20.dp))
-                            Text(
-                                "學習中",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.onSecondary)
-                                    .padding(horizontal = 10.dp, vertical = 5.dp)
-                            )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        Column(modifier = Modifier.align(Alignment.TopCenter)) {
+                            if (current.learning) {
+                                Spacer(Modifier.height(20.dp))
+                                Text(
+                                    "學習中",
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.onSecondary)
+                                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(current.tw, fontSize = 30.sp, fontWeight = FontWeight.Bold)
                         }
                     }
-                    Column(
-                        modifier = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                }
+            } else {
+                Card(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            rotationY = rotateDeg.value
+                            cameraDistance = 6 * density
+                        }
+                        .padding(horizontal = 40.dp, vertical = 100.dp), onClick = {
+                        showChinese = !showChinese
+                    }, elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
                     ) {
-                        if (showChinese) {
-                            Text("中文")
-                            Text(current.tw, fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                        } else {
-                            Text("英文")
+                        Column(modifier = Modifier.align(Alignment.TopCenter)) {
+                            if (current.learning) {
+                                Spacer(Modifier.height(20.dp))
+                                Text(
+                                    "學習中",
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.onSecondary)
+                                        .padding(horizontal = 10.dp, vertical = 5.dp)
+                                )
+                            }
+                        }
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Text(current.en, fontSize = 30.sp, fontWeight = FontWeight.Bold)
                         }
                     }

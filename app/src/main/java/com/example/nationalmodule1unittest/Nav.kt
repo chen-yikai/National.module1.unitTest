@@ -77,5 +77,5 @@ fun Nav(context: Context) {
 }
 
 enum class Screens {
-    單字卡, 輪轉單字卡, NewCard, EditCard
+    單字卡, 輪轉單字卡, NewCard, EditCard, ReviewSettings
 }

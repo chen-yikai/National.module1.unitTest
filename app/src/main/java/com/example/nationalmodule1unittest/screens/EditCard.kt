@@ -45,7 +45,8 @@ fun EditCardScreen(
     val scope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier.testTag("EditCardScreen")
+        modifier = Modifier
+            .testTag("edit_card_screen")
             .padding(innerPadding)
             .padding(horizontal = 5.dp)
     ) {
@@ -64,24 +65,32 @@ fun EditCardScreen(
                 value = en,
                 onValueChange = { en = it },
                 placeholder = { Text("英文單字 (${cardDetail?.en})") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("en_input")
             )
             Spacer(Modifier.height(10.dp))
             TextField(
                 value = tw,
                 onValueChange = { tw = it },
                 placeholder = { Text("中文意思 (${cardDetail?.tw})") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("tw_input")
             )
             Spacer(Modifier.height(20.dp))
-            Button(onClick = {
-                scope.launch {
-                    if (id != null) {
-                        card.updateDetail(id, en, tw)
-                        navController.popBackStack()
+            Button(
+                onClick = {
+                    scope.launch {
+                        if (id != null) {
+                            card.updateDetail(id, en, tw)
+                        }
                     }
-                }
-            }, modifier = Modifier.fillMaxWidth()) {
+                    navController.popBackStack()
+                }, modifier = Modifier
+                    .testTag("submit_button")
+                    .fillMaxWidth()
+            ) {
                 Text("編輯")
             }
         }

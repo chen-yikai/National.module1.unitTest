@@ -35,6 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.isContainer
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,7 +68,12 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
         }
     }
 
-    LazyColumn(contentPadding = innerPadding, modifier = Modifier.testTag("HomeScreen").padding(horizontal = 10.dp)) {
+    LazyColumn(
+        contentPadding = innerPadding,
+        modifier = Modifier
+            .testTag("home_screen")
+            .padding(horizontal = 10.dp)
+    ) {
         stickyHeader {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -74,7 +81,10 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("單字列表", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                IconButton(onClick = { navController.navigate(Screens.NewCard.name) }) {
+                IconButton(
+                    onClick = { navController.navigate(Screens.NewCard.name) },
+                    modifier = Modifier.testTag("add_card")
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.add),
                         contentDescription = "add"
@@ -87,6 +97,7 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                     SegmentedButton(
                         selected = item == selected,
                         onClick = { selected = item },
+                        modifier = Modifier.testTag(item),
                         label = { Text(item) }, shape = SegmentedButtonDefaults.itemShape(
                             index = index, count = choiceButtons.size
                         )
@@ -95,11 +106,12 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
             }
             Spacer(Modifier.height(10.dp))
         }
-        items(if (selected == "所有") cards else cardsLearning) {
+        items(if (selected == "所有") cards else cardsLearning, key = { it.id }) {
             Card(
-                modifier = Modifier.padding(vertical = 5.dp),
+                modifier = Modifier
+                    .padding(vertical = 5.dp)
+                    .testTag("edit_card"),
                 onClick = { navController.navigate("${Screens.EditCard.name}/${it.id}") }) {
-
                 Row(
                     modifier = Modifier
                         .padding(horizontal = 5.dp, vertical = 15.dp)
@@ -108,7 +120,7 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                 ) {
                     IconButton(onClick = {
                         tts?.speak(it.en, TextToSpeech.QUEUE_FLUSH, null, null)
-                    }) {
+                    }, modifier = Modifier.testTag("card_speak_button")) {
                         Icon(
                             painter = painterResource(R.drawable.speak),
                             contentDescription = "speak"
@@ -116,15 +128,20 @@ fun HomeScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                     }
                     Spacer(Modifier.width(10.dp))
                     Column {
-                        Text(it.en, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        Text(it.tw, color = Color.Gray)
+                        Text(
+                            it.en,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                            modifier = Modifier.testTag("en_text")
+                        )
+                        Text(it.tw, color = Color.Gray, modifier = Modifier.testTag("tw_text"))
                     }
                     Spacer(Modifier.weight(1f))
                     IconButton(onClick = {
                         scope.launch {
                             card.updateLearning(it.id, !it.learning)
                         }
-                    }) {
+                    }, modifier = Modifier.testTag("card_learning_button")) {
                         Icon(
                             painter = painterResource(if (it.learning) R.drawable.is_learning else R.drawable.not_learning),
                             contentDescription = null,

@@ -59,7 +59,7 @@ fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
 
     Box(
         modifier = Modifier
-            .testTag("CardScreen")
+            .testTag("card_screen")
             .padding(innerPadding),
     ) {
         Row(
@@ -74,9 +74,10 @@ fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
             LaunchedEffect(it) {
                 showChinese = true
             }
-            if (showChinese) {
+            if (showChinese && rotateDeg.value > 90f) {
                 Card(
                     modifier = Modifier
+                        .testTag("chinese_card")
                         .fillMaxSize()
                         .graphicsLayer {
                             rotationY = rotateDeg.value
@@ -115,6 +116,7 @@ fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
             } else {
                 Card(
                     modifier = Modifier
+                        .testTag("english_card")
                         .fillMaxSize()
                         .graphicsLayer {
                             rotationY = rotateDeg.value

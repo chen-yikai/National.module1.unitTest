@@ -40,7 +40,7 @@ fun NewCardScreen(innerPadding: PaddingValues, card: CardDao, navController: Nav
 
     Column(
         modifier = Modifier
-            .testTag("NewCardScreen")
+            .testTag("new_card_screen")
             .padding(innerPadding)
             .padding(horizontal = 5.dp)
     ) {
@@ -58,14 +58,19 @@ fun NewCardScreen(innerPadding: PaddingValues, card: CardDao, navController: Nav
             TextField(
                 value = en,
                 onValueChange = { en = it },
-                placeholder = { Text("英文單字") }, modifier = Modifier.fillMaxWidth()
+                placeholder = { Text("英文單字") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("en_input")
             )
             Spacer(Modifier.height(10.dp))
             TextField(
                 value = tw,
                 onValueChange = { tw = it },
                 placeholder = { Text("中文意思") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("tw_input")
             )
             Spacer(Modifier.height(20.dp))
             Button(onClick = {
@@ -73,7 +78,9 @@ fun NewCardScreen(innerPadding: PaddingValues, card: CardDao, navController: Nav
                     card.addCard(Card(en = en, tw = tw, learning = false))
                 }
                 navController.navigate(Screens.單字卡.name)
-            }, modifier = Modifier.fillMaxWidth()) {
+            }, modifier = Modifier
+                .fillMaxWidth()
+                .testTag("submit_button")) {
                 Text("新增")
             }
         }

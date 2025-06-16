@@ -56,7 +56,7 @@ fun Nav(context: Context, navController: NavHostController) {
                                 contentDescription = it.key
                             )
                         },
-                        modifier = Modifier.testTag(it.key),
+                        modifier = Modifier.testTag("nav_item_${it.key}"),
                         selected = currentScreen?.destination?.route == it.key
                     )
                 }

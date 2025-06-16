@@ -69,26 +69,29 @@ fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
         ) {
             Text("${pagerState.currentPage + 1}/${cards.size}")
         }
-        HorizontalPager(pagerState, modifier = Modifier.align(Alignment.Center)) {
+        HorizontalPager(
+            pagerState,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .testTag("card_horizontal_pager")
+        ) {
             val current = cards[it]
             LaunchedEffect(it) {
                 showChinese = true
             }
-            if (showChinese && rotateDeg.value > 90f) {
+
+            Box(modifier = Modifier.testTag("pager_card_$it")) {
                 Card(
                     modifier = Modifier
-                        .testTag("chinese_card")
+                        .testTag(if (showChinese) "chinese_card" else "english_card")
                         .fillMaxSize()
                         .graphicsLayer {
                             rotationY = rotateDeg.value
                             cameraDistance = 6 * density
                         }
-                        .graphicsLayer {
-                            rotationY = 180f
-                        }
-                        .padding(horizontal = 40.dp, vertical = 100.dp), onClick = {
-                        showChinese = !showChinese
-                    }, elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                        .padding(horizontal = 40.dp, vertical = 100.dp),
+                    onClick = { showChinese = !showChinese },
+                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
                 ) {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -109,43 +112,12 @@ fun CardScreen(innerPadding: PaddingValues, card: CardDao, navController: NavHos
                             modifier = Modifier.align(Alignment.Center),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(current.tw, fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-            } else {
-                Card(
-                    modifier = Modifier
-                        .testTag("english_card")
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            rotationY = rotateDeg.value
-                            cameraDistance = 6 * density
-                        }
-                        .padding(horizontal = 40.dp, vertical = 100.dp), onClick = {
-                        showChinese = !showChinese
-                    }, elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-                ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        Column(modifier = Modifier.align(Alignment.TopCenter)) {
-                            if (current.learning) {
-                                Spacer(Modifier.height(20.dp))
-                                Text(
-                                    "學習中",
-                                    modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.onSecondary)
-                                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                                )
-                            }
-                        }
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(current.en, fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                if (showChinese) current.tw else current.en,
+                                fontSize = 30.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.testTag(if (showChinese) "tw_text" else "en_text")
+                            )
                         }
                     }
                 }

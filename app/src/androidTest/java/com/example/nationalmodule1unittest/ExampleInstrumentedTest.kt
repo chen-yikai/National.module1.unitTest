@@ -1,32 +1,26 @@
 package com.example.nationalmodule1unittest
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.isNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performGesture
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTouchInput
-import androidx.test.espresso.action.ViewActions.swipeLeft
+import androidx.compose.ui.test.swipeLeft
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
-import org.junit.Test
-import org.junit.runner.RunWith
-
 import org.junit.FixMethodOrder
 import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
 
 val testCard = mutableListOf(
@@ -50,12 +44,14 @@ class StartTesting {
         Thread.sleep(delayTime)
     }
 
+//    @Ignore
     @Test
     fun `1 Show the card list screen after the app launched`() {
         rule.onNodeWithTag("home_screen").assertExists()
         delay()
     }
 
+//    @Ignore
     @Test
     fun `2 Nav to the new card screen and add cards`() {
         rule.onNodeWithTag("add_card").performClick()
@@ -75,6 +71,7 @@ class StartTesting {
         delay()
     }
 
+//    @Ignore
     @Test
     fun `4 Check Card list data`() {
         testCard.forEachIndexed { index, (en, tw) ->
@@ -88,6 +85,7 @@ class StartTesting {
         delay()
     }
 
+//    @Ignore
     @Test
     fun `5 edit card data and check the data update`() {
         val tempTestCards = mutableStateListOf<Pair<String, String>>()
@@ -112,6 +110,7 @@ class StartTesting {
         delay()
     }
 
+//    @Ignore
     @Test
     fun `6 Check card learning status`() {
         testCard.forEach {
@@ -143,24 +142,32 @@ class StartTesting {
         rule.onNodeWithTag("nav_item_${Screens.輪轉單字卡.name}")
             .performClick()
         rule.onNodeWithTag("card_screen").assertExists()
+        testCard.forEachIndexed { index, (en, tw) ->
+//            val parent = rule.onNodeWithTag("pager_card_$index")
+//
+//            val twText = parent.onChildren().filterToOne(hasTestTag("tw_text"))
+//            val enText = parent.onChildren().filterToOne(hasTestTag("en_text"))
+//            val chineseCard = parent.onChildren().filterToOne(hasTestTag("chinese_card"))
+//            val englishCard = parent.onChildren().filterToOne(hasTestTag("english_card"))
+//
+//            twText.assert(hasText(tw))
+//            chineseCard.performClick()
+//            rule.waitForIdle()
+//            enText.assert(hasText(en))
+//            englishCard.performClick()
+//            rule.waitForIdle()
 
-        testCard.forEach { (en, tw) ->
+            rule.onAllNodesWithTag("tw_text", useUnmergedTree = true)[0].assertTextEquals(tw)
+            rule.onAllNodesWithTag("chinese_card", useUnmergedTree = true)[0].performClick()
             rule.waitForIdle()
-            rule.onNodeWithTag("tw_text", useUnmergedTree = true).assertExists()
-            rule.onNodeWithTag("tw_text", useUnmergedTree = true).assert(hasText(tw))
-
-            rule.onNodeWithTag("chinese_card").performClick()
-            rule.waitForIdle()
-            rule.onNodeWithTag("en_text", useUnmergedTree = true).assertExists()
-            rule.onNodeWithTag("en_text").assert(hasText(en))
-
-            rule.onNodeWithTag("english_card").performClick()
+            rule.onAllNodesWithTag("en_text", useUnmergedTree = true)[0].assertTextEquals(en)
+            rule.onAllNodesWithTag("english_card", useUnmergedTree = true)[0].performClick()
             rule.waitForIdle()
 
-            rule.onNodeWithTag("card_horizontal_pager").performTouchInput {
+            rule.onNodeWithTag("horizontal_pager_tag", useUnmergedTree = true).performTouchInput {
                 swipeLeft()
+                rule.waitForIdle()
             }
-            rule.waitForIdle()
         }
         delay()
     }

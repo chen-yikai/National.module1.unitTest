@@ -69,6 +69,7 @@ fun Nav(context: Context, navController: NavHostController) {
             enterTransition = { EnterTransition.None }, exitTransition = { ExitTransition.None }) {
             composable(Screens.單字卡.name) { HomeScreen(innerPadding, card, navController) }
             composable(Screens.輪轉單字卡.name) { CardScreen(innerPadding, card, navController) }
+//            composable(Screens.輪轉單字卡.name) { PagerScreen() }
             composable(
                 Screens.NewCard.name,
                 enterTransition = { slideInHorizontally { it } },

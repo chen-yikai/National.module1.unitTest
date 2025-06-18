@@ -57,7 +57,6 @@ dependencies {
     implementation("androidx.room:room-ktx:$room")
     implementation("androidx.room:room-common:$room")
     kapt("androidx.room:room-compiler:$room")
-    androidTestImplementation("androidx.navigation:navigation-testing:2.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
